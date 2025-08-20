@@ -192,6 +192,76 @@ module MundiApi
       GetInvoiceResponse.from_hash(decoded)
     end
 
+    # Gets all invoices
+    # @param [Integer] page Optional parameter: Page number
+    # @param [Integer] size Optional parameter: Page size
+    # @param [String] code Optional parameter: Filter for Invoice's code
+    # @param [String] customer_id Optional parameter: Filter for Invoice's
+    # customer id
+    # @param [String] subscription_id Optional parameter: Filter for Invoice's
+    # subscription id
+    # @param [DateTime] created_since Optional parameter: Filter for Invoice's
+    # creation date start range
+    # @param [DateTime] created_until Optional parameter: Filter for Invoices
+    # creation date end range
+    # @param [String] status Optional parameter: Filter for Invoice's status
+    # @param [DateTime] due_since Optional parameter: Filter for Invoice's due
+    # date start range
+    # @param [DateTime] due_until Optional parameter: Filter for Invoice's due
+    # date end range
+    # @param [String] customer_document Optional parameter: Fillter for
+    # invoice's document
+    # @return ListInvoicesResponse response from the API call
+    def get_invoices(page = nil,
+                     size = nil,
+                     code = nil,
+                     customer_id = nil,
+                     subscription_id = nil,
+                     created_since = nil,
+                     created_until = nil,
+                     status = nil,
+                     due_since = nil,
+                     due_until = nil,
+                     customer_document = nil)
+      # Prepare query url.
+      _path_url = '/invoices'
+      _query_builder = Configuration.base_uri.dup
+      _query_builder << _path_url
+      _query_builder = APIHelper.append_url_with_query_parameters(
+        _query_builder,
+        {
+          'page' => page,
+          'size' => size,
+          'code' => code,
+          'customer_id' => customer_id,
+          'subscription_id' => subscription_id,
+          'created_since' => created_since,
+          'created_until' => created_until,
+          'status' => status,
+          'due_since' => due_since,
+          'due_until' => due_until,
+          'customer_document' => customer_document
+        },
+        array_serialization: Configuration.array_serialization
+      )
+      _query_url = APIHelper.clean_url _query_builder
+      # Prepare headers.
+      _headers = {
+        'accept' => 'application/json'
+      }
+      # Prepare and execute HttpRequest.
+      _request = @http_client.get(
+        _query_url,
+        headers: _headers
+      )
+      BasicAuth.apply(_request)
+      _context = execute_request(_request)
+      validate_response(_context)
+      # Return appropriate response type.
+      decoded = APIHelper.json_deserialize(_context.response.raw_body)
+      ListInvoicesResponse.from_hash(decoded)
+    end
+
     # Cancels an invoice
     # @param [String] invoice_id Required parameter: Invoice id
     # @param [String] idempotency_key Optional parameter: Example:
@@ -223,72 +293,6 @@ module MundiApi
       # Return appropriate response type.
       decoded = APIHelper.json_deserialize(_context.response.raw_body)
       GetInvoiceResponse.from_hash(decoded)
-    end
-
-    # Gets all invoices
-    # @param [Integer] page Optional parameter: Page number
-    # @param [Integer] size Optional parameter: Page size
-    # @param [String] code Optional parameter: Filter for Invoice's code
-    # @param [String] customer_id Optional parameter: Filter for Invoice's
-    # customer id
-    # @param [String] subscription_id Optional parameter: Filter for Invoice's
-    # subscription id
-    # @param [DateTime] created_since Optional parameter: Filter for Invoice's
-    # creation date start range
-    # @param [DateTime] created_until Optional parameter: Filter for Invoices
-    # creation date end range
-    # @param [String] status Optional parameter: Filter for Invoice's status
-    # @param [DateTime] due_since Optional parameter: Filter for Invoice's due
-    # date start range
-    # @param [DateTime] due_until Optional parameter: Filter for Invoice's due
-    # date end range
-    # @return ListInvoicesResponse response from the API call
-    def get_invoices(page = nil,
-                     size = nil,
-                     code = nil,
-                     customer_id = nil,
-                     subscription_id = nil,
-                     created_since = nil,
-                     created_until = nil,
-                     status = nil,
-                     due_since = nil,
-                     due_until = nil)
-      # Prepare query url.
-      _path_url = '/invoices'
-      _query_builder = Configuration.base_uri.dup
-      _query_builder << _path_url
-      _query_builder = APIHelper.append_url_with_query_parameters(
-        _query_builder,
-        {
-          'page' => page,
-          'size' => size,
-          'code' => code,
-          'customer_id' => customer_id,
-          'subscription_id' => subscription_id,
-          'created_since' => created_since,
-          'created_until' => created_until,
-          'status' => status,
-          'due_since' => due_since,
-          'due_until' => due_until
-        },
-        array_serialization: Configuration.array_serialization
-      )
-      _query_url = APIHelper.clean_url _query_builder
-      # Prepare headers.
-      _headers = {
-        'accept' => 'application/json'
-      }
-      # Prepare and execute HttpRequest.
-      _request = @http_client.get(
-        _query_url,
-        headers: _headers
-      )
-      BasicAuth.apply(_request)
-      _context = execute_request(_request)
-      validate_response(_context)
-      # Return appropriate response type.
-      decoded = APIHelper.json_deserialize(_context.response.raw_body)
-      ListInvoicesResponse.from_hash(decoded)
     end
   end
 end
